@@ -1,5 +1,13 @@
 #%%
 import pandas as pd
+import matplotlib.pyplot as plt
+from pandas.plotting import scatter_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_predict
+from sklearn import metrics
+
 
 
 def readWeather():
@@ -99,6 +107,7 @@ def mergeWithoutWeather(dfIntervention, dfVaricelle, dfDiarrhee, dfGrippe, dfVac
     df = pd.merge(df, dfDiarrhee, how='left', on=['year', 'week'])
     df = pd.merge(df, dfGrippe, how='left', on=['year', 'week'])
     df = pd.merge(df, dfIntervention, how='left', on=['year', 'week'])
+    df = df[df.week != 53]
     return df
 
 dfI = readInterventions()
@@ -109,10 +118,26 @@ dfD = readDiarrhee()
 
 dfW = readWeather()
 
-df = mergeAll(dfI, dfV, dfW, dfD, dfG, dfVF)
+#Faux car weather n'a pas de colonne year and week mais une ligne par jour
+#df = mergeAll(dfI, dfV, dfW, dfD, dfG, dfVF)
 #df.to_csv('Data/data_merged.csv', index=False,compression=compression_opts)  
 
 df2 = mergeWithoutWeather(dfI,dfV,dfD,dfG,dfVF)
-df2.to_csv('Data/data_merged_without.csv', index=False)
-print(df2)
+df2.to_csv('Data/data_merged_without_weather.csv', index=False)
+
+#LINEAR REGRESSION
+features = ['year','week','vacances_zone_c','ferie','inc_varicelle','inc_diarrhee','inc_grippe']
+X=df2.loc[:,features].values
+y=df2.loc[:,['nb_ope']].values
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
+model = LinearRegression()
+model.fit(X_train, y_train)
+predictions = model.predict(X_test)
+
+fig, ax = plt.subplots()
+ax.scatter(y_test, predictions)
+ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()])
+ax.set_xlabel('Measured')
+ax.set_ylabel('Predicted')
+plt.show()
 # %%
