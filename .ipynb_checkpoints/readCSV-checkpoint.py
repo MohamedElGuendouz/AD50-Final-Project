@@ -8,8 +8,8 @@ def readVaricelle():
     df = df[df['geo_insee']==11]
     df['week'] = df['week'].astype(str)
     print(type(df['week']))
-    df['year'] = df['week'].str[0:4]
-    df['week'] = df['week'].str[4:6]
+    df['year'] = df['week'].str[0:4].astype(int)
+    df['week'] = df['week'].str[4:6].astype(int)
     return df
 
 def readWeather():
@@ -26,8 +26,8 @@ def readDiarrhee():
     #Select only Ile de France
     df = df[df['geo_insee']==11]
     df['week'] = df['week'].astype(str)
-    df['year'] = df['week'].str[0:4]
-    df['week'] = df['week'].str[4:6]
+    df['year'] = df['week'].str[0:4].astype(int)
+    df['week'] = df['week'].str[4:6].astype(int)
     return df
 
 def readInterventions():
@@ -67,8 +67,8 @@ def readGrippes():
     df = df[df['geo_insee']==11]
     # make string version of original column, call it 'col'
     df['week'] = df['week'].astype(str)
-    df['year'] = df['week'].str[0:4]
-    df['week'] = df['week'].str[4:6]
+    df['year'] = df['week'].str[0:4].astype(int)
+    df['week'] = df['week'].str[4:6].astype(int)
     return df
 
 def readVacancesFeries():
@@ -77,17 +77,39 @@ def readVacancesFeries():
     #Create new dataframe with merged vacances and feries
     df = df1.merge(df2, how='outer')
     df['ferie'].fillna(False, inplace=True)
+    df = df.drop(columns=['date'], axis=1)
+    df = df.groupby(['year','week'], as_index=False).sum()
     return df
 
-print(readVacancesFeries())
+def mergeAll(dfIntervention, dfVaricelle, dfWeather, dfDiarrhee, dfGrippe, dfVacFerie):
+    df = pd.merge(dfIntervention, dfVaricelle, how='left', on=['year', 'week'])
+    df = pd.merge(df, dfWeather, how='left', on=['year', 'week'])
+    df = pd.merge(df, dfDiarrhee, how='left', on=['year', 'week'])
+    df = pd.merge(df, dfGrippe, how='left', on=['year', 'week'])
+    df = pd.merge(df, dfVacFerie, how='left', on=['year', 'week'])
+    return df
+
+dfI = readInterventions()
+dfVF = readVacancesFeries()
+dfV = readVaricelle()
+dfG = readGrippes()
+dfD = readDiarrhee()
+dfW = readWeather()
+"""
+print(readVacancesFeries())"""
 print(readVaricelle())
 """
 print(readFeries())
 print(readDiarrhee())
-print(readWeather())
+print(readWeather())"""
 print(readInterventions())
+"""
 #print(readVacances())
 print(readGrippes())
 #print(readFeries())"""
 
+df = mergeAll(dfI,dfV,dfW,dfD,dfG,dfVF)
+df.to_csv('Data/data_merged.csv', index=False,
+          compression=compression_opts)  
+print(df)
 # %%

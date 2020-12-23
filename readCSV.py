@@ -109,5 +109,7 @@ print(readGrippes())
 #print(readFeries())"""
 
 df = mergeAll(dfI,dfV,dfW,dfD,dfG,dfVF)
+df.to_csv('Data/data_merged.csv', index=False,
+          compression=compression_opts)  
 print(df)
 # %%
