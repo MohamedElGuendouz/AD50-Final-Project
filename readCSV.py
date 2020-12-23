@@ -113,5 +113,6 @@ df = mergeAll(dfI, dfV, dfW, dfD, dfG, dfVF)
 #df.to_csv('Data/data_merged.csv', index=False,compression=compression_opts)  
 
 df2 = mergeWithoutWeather(dfI,dfV,dfD,dfG,dfVF)
+df2.to_csv('Data/data_merged_without.csv', index=False)
 print(df2)
 # %%
