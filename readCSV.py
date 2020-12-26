@@ -16,6 +16,8 @@ def readWeather():
     df['date_time']= pd.to_datetime(df['date_time'])
     df['year'] = df['date_time'].dt.isocalendar().year
     df['week'] = df['date_time'].dt.isocalendar().week
+    df = df.groupby(['year','week'], as_index=False).mean()
+    #df = df.drop(columns=['date'], axis=1)
     return df
 
 def readDiarrhee():
@@ -95,11 +97,12 @@ def readVacancesFeries():
     return df
 
 def mergeAll(dfIntervention, dfVaricelle, dfWeather, dfDiarrhee, dfGrippe, dfVacFerie):
-    df = pd.merge(dfIntervention, dfVaricelle, how='left', on=['year', 'week'])
-    df = pd.merge(df, dfWeather, how='left', on=['year', 'week'])
+    df = pd.merge(dfVacFerie, dfVaricelle, how='left', on=['year', 'week'])
     df = pd.merge(df, dfDiarrhee, how='left', on=['year', 'week'])
     df = pd.merge(df, dfGrippe, how='left', on=['year', 'week'])
-    df = pd.merge(df, dfVacFerie, how='left', on=['year', 'week'])
+    df = pd.merge(df, dfWeather, how='left', on=['year', 'week'])
+    df = pd.merge(df, dfIntervention, how='left', on=['year', 'week'])
+    df = df[df.week != 53]
     return df
 
 def mergeWithoutWeather(dfIntervention, dfVaricelle, dfDiarrhee, dfGrippe, dfVacFerie):
@@ -115,17 +118,15 @@ dfVF = readVacancesFeries()
 dfV = readVaricelle()
 dfG = readGrippes()
 dfD = readDiarrhee()
-
 dfW = readWeather()
 
-#Faux car weather n'a pas de colonne year and week mais une ligne par jour
-#df = mergeAll(dfI, dfV, dfW, dfD, dfG, dfVF)
-#df.to_csv('Data/data_merged.csv', index=False,compression=compression_opts)  
+df = mergeAll(dfI, dfV, dfW, dfD, dfG, dfVF)
+df.to_csv('Data/data_merged.csv', index=False)  
 
-df2 = mergeWithoutWeather(dfI,dfV,dfD,dfG,dfVF)
-df2.to_csv('Data/data_merged_without_weather.csv', index=False)
+print(df)
 
 #LINEAR REGRESSION
+"""
 features = ['year','week','vacances_zone_c','ferie','inc_varicelle','inc_diarrhee','inc_grippe']
 X=df2.loc[:,features].values
 y=df2.loc[:,['nb_ope']].values
@@ -139,5 +140,5 @@ ax.scatter(y_test, predictions)
 ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()])
 ax.set_xlabel('Measured')
 ax.set_ylabel('Predicted')
-plt.show()
+plt.show()"""
 # %%
