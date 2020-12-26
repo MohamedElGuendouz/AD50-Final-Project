@@ -105,13 +105,6 @@ def mergeAll(dfIntervention, dfVaricelle, dfWeather, dfDiarrhee, dfGrippe, dfVac
     df = df[df.week != 53]
     return df
 
-def mergeWithoutWeather(dfIntervention, dfVaricelle, dfDiarrhee, dfGrippe, dfVacFerie):
-    df = pd.merge(dfVacFerie, dfVaricelle, how='left', on=['year', 'week'])
-    df = pd.merge(df, dfDiarrhee, how='left', on=['year', 'week'])
-    df = pd.merge(df, dfGrippe, how='left', on=['year', 'week'])
-    df = pd.merge(df, dfIntervention, how='left', on=['year', 'week'])
-    df = df[df.week != 53]
-    return df
 
 dfI = readInterventions()
 dfVF = readVacancesFeries()
@@ -125,34 +118,4 @@ df.to_csv('Data/data_merged.csv', index=False)
 
 #print(df)
 
-#LINEAR REGRESSION
-x=df.iloc[:,1:26]
-y=df.loc[:,['nb_ope']]
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)
-model = LinearRegression()
-model.fit(x_train, y_train)
-predictions = model.predict(x_test)
-
-fig, ax = plt.subplots()
-ax.scatter(y_test, predictions)
-ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()])
-ax.set_xlabel('Measured')
-ax.set_ylabel('Predicted')
-plt.show()
-
-"""
-features = ['year','week','vacances_zone_c','ferie','inc_varicelle','inc_diarrhee','inc_grippe']
-X=df2.loc[:,features].values
-y=df2.loc[:,['nb_ope']].values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
-model = LinearRegression()
-model.fit(X_train, y_train)
-predictions = model.predict(X_test)
-
-fig, ax = plt.subplots()
-ax.scatter(y_test, predictions)
-ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()])
-ax.set_xlabel('Measured')
-ax.set_ylabel('Predicted')
-plt.show()"""
 # %%
