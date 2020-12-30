@@ -136,4 +136,3 @@ df = mergeAll(dfI, dfV, dfW, dfD, dfG, dfVF)
 #Convert the dataframe into csv file
 df.to_csv('Data/data_merged.csv', index=False)  
 
-
