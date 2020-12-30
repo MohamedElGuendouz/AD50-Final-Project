@@ -55,7 +55,7 @@ from keras.layers import Dense
 from keras.layers import Dropout
 
 #Initalise number of observation and structure of rnn
-n_obs= 100
+n_obs= 50
 rnn_structure=(50,50,50,50)
 
 #Function that build series with inputs and number of observation and return an array
@@ -138,7 +138,7 @@ y_train=np.array(training_set_scaled[n_obs:,25])
 
 #Build and fit the regressor to x_train and y_train
 regressor=build_regressor(rnn_structure,(x_train.shape[1], x_train.shape[2]),rnn_type='GRU',dropout=0.2)
-regressor.fit(x_train, y_train, epochs = 50, batch_size = 40)
+regressor.fit(x_train, y_train, epochs = 100, batch_size = 40)
 
 #Build series into x_test 
 dataset = np.concatenate((training_set_scaled,test_set_scaled),axis=0)
@@ -172,7 +172,7 @@ x_train= build_series(training_set_scaled,n_obs)
 y_train=np.array(training_set_scaled[n_obs:,25])
 
 regressor=build_regressor(rnn_structure,(x_train.shape[1], x_train.shape[2]),rnn_type='LSTM',dropout=0.2)
-regressor.fit(x_train, y_train, epochs = 50, batch_size = 40)
+regressor.fit(x_train, y_train, epochs = 100, batch_size = 40)
 
 dataset = np.concatenate((training_set_scaled,test_set_scaled),axis=0)
 inputs = dataset[len(training_set_scaled)-n_obs:]
