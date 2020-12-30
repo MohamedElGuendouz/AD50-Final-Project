@@ -158,4 +158,5 @@ mean_s_lstm = mean_squared_error(test_set_scaled[:,25], predictions)
 print("Mean squared error LSTM = ",mean_s_lstm)
 mean_a_lstm = mean_absolute_error(test_set_scaled[:,25], predictions)
 print("Mean absolute error LSTM = ",mean_a_lstm)
+
 # %%
